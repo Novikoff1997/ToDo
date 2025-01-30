@@ -5,7 +5,7 @@ const headerInput = document.querySelector(".header-input");
 const todoList = document.querySelector(".todo-list");
 const todoCompleted = document.querySelector(".todo-completed");
 
-const toDoData = [];
+let toDoData;
 
 const render = () => {
   todoList.innerHTML = "";
@@ -26,19 +26,19 @@ const render = () => {
       "</div>";
 
     if (item.completed) {
-      // если комплит true
-      todoCompleted.append(li); // добавляем в выполненные
+      todoCompleted.append(li);
     } else {
-      // В противном случае
-      todoList.append(li); // добавляем в не выполненные
+      todoList.append(li);
     }
 
     li.querySelector(".todo-complete").addEventListener("click", () => {
       item.completed = !item.completed;
+      localStorage.setItem("toDoData", JSON.stringify(toDoData));
       render();
     });
     li.querySelector(".todo-remove").addEventListener("click", () => {
       toDoData.splice(index, 1);
+      localStorage.setItem("toDoData", JSON.stringify(toDoData));
       render();
     });
   });
@@ -47,29 +47,27 @@ const render = () => {
 todoControl.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const inputValue = headerInput.value; // Название тудушки сохраняем в переменную
+  const inputValue = headerInput.value;
 
   if (inputValue.trim() === "") {
-    // если поле пустое
-    alert("Поле не может быть пустым!"); // выводим алерт
-    headerInput.value = ""; // очищаем поле ввода что бы не сохранялись пробелы
+    alert("Поле не может быть пустым!");
+    headerInput.value = "";
   } else {
-    // В противном случе
     const newToDo = {
-      // Создаем переменную с новой задачей
       text: headerInput.value,
       completed: false,
     };
-    toDoData.push(newToDo); // Пушим новую задачу в тудулист
-
-    headerInput.value = ""; // Очищаем инпут
-    render(); // Выводим на экран
+    toDoData.push(newToDo);
+    localStorage.setItem("toDoData", JSON.stringify(toDoData));
+    headerInput.value = "";
+    render();
   }
 });
 
-render();
+if (!localStorage.length) {
+  localStorage.setItem("toDoData", JSON.stringify([]));
+}
 
-// let arr = [1, 2, 3, 4];
-// localStorage.setItem(1, JSON.stringify(arr));
-// arr = JSON.parse(localStorage.getItem(1));
-// console.log(arr);
+toDoData = JSON.parse(localStorage.getItem("toDoData"));
+
+render();
